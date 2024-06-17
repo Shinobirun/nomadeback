@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Dependency directories
+pids/
+logs/
+results/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+
+# Production build files
+/build
