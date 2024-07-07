@@ -34,15 +34,15 @@ const initializeApp = async () => {
 
 // Configura las rutas
 app.use(indexRoutes);
-app.use(taskRoutes);
-app.use(userRoutes);
+app.use('/api', taskRoutes); // Usar las rutas para tareas
+app.use('/api', paqueteRoutes); // Usar las rutas para paquetes
 app.use(paqueteRoutes);
 app.use(historialRoutes);
 
 // Inicializa la aplicación y luego escucha en el puerto
 initializeApp().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+  app.listen(4000, () => {
+    console.log('Servidor escuchando en el puerto 4000');
   });
 }).catch(error => {
   console.error('Error al inicializar la aplicación:', error);
