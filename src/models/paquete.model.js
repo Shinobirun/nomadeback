@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 
 export const createPaqueteTable = async () => {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS PaqueteTuristico (
+    CREATE TABLE IF NOT EXISTS paquetes (
       id INT AUTO_INCREMENT PRIMARY KEY,
       titulo VARCHAR(100),
       informacion VARCHAR(500),
@@ -15,5 +15,5 @@ export const createPaqueteTable = async () => {
 
 export const createPaquete = async (paqueteData) => {
   const { titulo, informacion, foto_url, precio, tipo } = paqueteData;
-  await pool.query('INSERT INTO PaqueteTuristico (titulo, informacion, foto_url, precio, tipo) VALUES (?, ?, ?, ?, ?)', [titulo, informacion, foto_url, precio, tipo]);
+  await pool.query('INSERT INTO paquetes (titulo, informacion, foto_url, precio, tipo) VALUES (?, ?, ?, ?, ?)', [titulo, informacion, foto_url, precio, tipo]);
 };

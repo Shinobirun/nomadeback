@@ -11,6 +11,20 @@ const pool = createPool({
   port: parseInt(process.env.DB_PORT), // Parsea el puerto a entero
 });
 
+// Probar conexión a la base de datos
+const testDBConnection = async () => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.ping();
+    await connection.release();
+    console.log('Conexión a la base de datos exitosa');
+  } catch (error) {
+    console.error('Error al conectar a la base de datos:', error);
+  }
+};
+
+testDBConnection();
+
 export { pool };
 
 export const createUserTable = async () => {
