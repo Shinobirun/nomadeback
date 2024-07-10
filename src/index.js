@@ -10,7 +10,7 @@ import paqueteRoutes from './routes/paquete.routes.js';
 import historialRoutes from './routes/historial.routes.js';
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4010;
 
 // Middleware
 app.use(cors());

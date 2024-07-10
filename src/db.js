@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config(); // Cargar variables de entorno desde .env
 
+
+
 const pool = createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -10,6 +12,8 @@ const pool = createPool({
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT), // Parsea el puerto a entero
 });
+
+
 
 // Probar conexión a la base de datos
 const testDBConnection = async () => {
