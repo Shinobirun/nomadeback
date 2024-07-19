@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet'; // Agregar helmet para la configuración de seguridad
-import { createUserTable, createPaqueteTable, createHistorialTable } from './db.js';
+import helmet from 'helmet';
+import multer from 'multer';
+import path from 'path';
+import { createUserTable, createUserdataTable, createPaqueteTable, createHistorialTable } from './db.js';
 import router from './routes/paquete.routes.js';
 import indexRoutes from './routes/index.routes.js';
 import taskRoutes from './routes/task.routes.js';
@@ -20,18 +22,33 @@ app.use(express.json());
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"], // Permite recursos desde el mismo origen
-      scriptSrc: ["'self'"],  // Permite scripts desde el mismo origen
-      styleSrc: ["'self'", 'https://fonts.googleapis.com'],  // Permite estilos desde el mismo origen y Google Fonts
-      imgSrc: ["'self'", 'data:', 'http://localhost:4000'],  // Permite imágenes desde el mismo origen y URLs de datos
-      connectSrc: ["'self'"],  // Permite conexiones desde el mismo origen
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],  // Permite fuentes desde el mismo origen y Google Fonts
-      frameSrc: ["'none'"],    // Bloquea todos los iframes
-      objectSrc: ["'none'"],   // Bloquea todos los objetos
-      upgradeInsecureRequests: [],  // Opción para actualizar solicitudes no seguras (puedes agregar `['https:']` si lo deseas)
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'http://localhost:4000'],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   },
 }));
+
+// Configuración de multer para la carga de archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage });
+
+// Middleware para servir archivos estáticos desde la carpeta de uploads
+app.use('/uploads', express.static('uploads'));
 
 // Configura las rutas
 app.use(indexRoutes);
@@ -43,18 +60,17 @@ app.use('/api', historialRoutes);
 // Función para inicializar la aplicación
 const initializeApp = async () => {
   try {
-    // Crea las tablas si no existen
     await createUserTable();
     console.log('Tabla de usuarios creada exitosamente (si no existía)');
-
+    await createUserdataTable();
+    console.log('Tabla de userdata creada exitosamente (si no existía)');
     await createPaqueteTable();
     console.log('Tabla de paquetes creada exitosamente (si no existía)');
-
     await createHistorialTable();
     console.log('Tabla de historiales creada exitosamente (si no existía)');
   } catch (error) {
     console.error('Error al crear las tablas:', error);
-    process.exit(1); // Termina la aplicación si hay un error crítico
+    process.exit(1);
   }
 };
 
