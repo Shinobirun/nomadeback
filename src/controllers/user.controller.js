@@ -1,5 +1,8 @@
 import { createUser, getUserById, updateUser, deleteUser } from '../models/user.model.js';
 import multer from 'multer';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { pool } from '../db.js';
 
 // Configuración de multer
 const storage = multer.diskStorage({
@@ -71,6 +74,36 @@ export const deleteUserHandler = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Manejar el login
+export const loginUserHandler = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Obtener el usuario por email
+    const [user] = await pool.query('SELECT * FROM User WHERE email = ?', [email]);
+
+    if (user.length === 0) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+
+    // Verificar la contraseña
+    const isMatch = await bcrypt.compare(password, user[0].password);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+
+    // Generar un token de autenticación
+    const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+};
+
 
 // Exportar configuración de multer para ser usada en las rutas
 export const uploadMiddleware = upload.single('foto');
