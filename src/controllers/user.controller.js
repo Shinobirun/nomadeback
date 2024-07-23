@@ -36,9 +36,13 @@ export const getUserByIdHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await getUserById(id);
+    const [user] = await pool.query('SELECT * FROM User WHERE id = ?', [id]);
 
-    res.json(user);
+    if (user.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json(user[0]);
   } catch (error) {
     console.error('Error getting user:', error);
     res.status(500).json({ error: error.message });
@@ -97,7 +101,16 @@ export const loginUserHandler = async (req, res) => {
     // Generar un token de autenticación
     const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token });
+    // Devolver el token y datos del usuario
+    res.json({
+      token,
+      user: {
+        id: user[0].id,
+        username: user[0].username,
+        first_name: user[0].first_name,
+        last_name: user[0].last_name
+      }
+    });
   } catch (error) {
     console.error('Error logging in user:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });
